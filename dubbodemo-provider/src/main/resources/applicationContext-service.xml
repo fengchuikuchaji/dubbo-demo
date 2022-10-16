@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--
+        1. 配置服务名:
+            1.1 服务名可以随便命，一般要求见名知意
+            1.2 多个服务的名称不能相同
+    -->
+    <dubbo:application name="dubbodemo-provider"></dubbo:application>
+    <!--
+        2. 配置包扫描:指定将哪个包中的服务注册到注册中心
+    -->
+    <dubbo:annotation package="com.atguigu"></dubbo:annotation>
+    <!--
+        3. 配置注册中心地址
+    -->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>
+    <!--
+        4. 配置提供者的远程调用协议
+            4.1 dubbo表示用的是dubbo
+            4.2 port表示调用当前这个服务使用的端口号,默认是20880
+                要求:多个服务提供者绝对不能使用相同的端口号
+    -->
+    <dubbo:protocol name="dubbo" port="20882"></dubbo:protocol>
+
+    <!--配置声明式事务-->
+    <!--1. 配置datasource-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="username" value="${datasource.username}"/>
+        <property name="password" value="${datasource.password}"/>
+        <property name="url" value="${datasource.url}"/>
+        <property name="driverClassName" value="${datasource.driverClassName}"/>
+    </bean>
+    <!--2.配置事务管理器对象-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--3.开启事务注解驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"></tx:annotation-driven>
+</beans>

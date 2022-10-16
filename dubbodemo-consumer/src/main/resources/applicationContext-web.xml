@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--配置SpringMVC自己的包扫描-->
+    <context:component-scan base-package="com.atguigu"></context:component-scan>
+
+    <!--
+        1. 配置应用名(提供者和消费者都需要配置,不允许重名):
+           zookeeper注册中心注册服务或者是订阅服务的时候，需要知道服务的应用名
+    -->
+    <dubbo:application name="dubbodemo-consumer"></dubbo:application>
+
+    <!--
+        2. 配置包扫描(提供者和消费者都需要配置)
+                提供者配置: 指定向注册中心注册哪些服务
+                消费者配置: 指定向注册中心订阅哪些服务
+           包扫描可以被代替(但是我们不会选择这种代替的做法):
+                提供者注册服务:
+                    <bean id="helloService" class="com.atguigu.service.impl.HelloServiceImpl" />
+                    <dubbo:service interface="com.atguigu.api.HelloService" ref="helloService" />
+                消费者订阅服务:
+                    <dubbo:reference id="helloService" interface="com.atguigu.api.HelloService" />
+    -->
+    <dubbo:annotation package="com.atguigu"></dubbo:annotation>
+    <!--
+        3. 配置注册中心地址:因为提供者要往注册中心注册服务、消费者要向注册中心订阅服务，所以无论是提供者还是消费者都需要配置注册中心地址。
+                         并且提供者和消费者连接的一定要是同一个注册中心
+    -->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>
+    <!--
+        4. 配置启动时是否检查:消费者在启动时检查注册中心中是否注册了我需要订阅的服务，这个配置只在消费者中进行配置。
+                          一般来说在开发阶段我们建议不检查，在生产环境中我们建议检查
+
+        5. 配置提供者的访问协议、端口号(只在提供者中进行配置):
+                <dubbo:protocol name="dubbo" port="20881"></dubbo:protocol>
+                5.1 name表示协议名，可以是dubbo(建议使用)、rmi等等一些RPC协议，不同的提供者可以配置不同的协议
+                5.2 port表示端口号，默认是20880，不同的提供者的端口号一定要不同
+    -->
+    <dubbo:consumer check="false"></dubbo:consumer>
+</beans>
