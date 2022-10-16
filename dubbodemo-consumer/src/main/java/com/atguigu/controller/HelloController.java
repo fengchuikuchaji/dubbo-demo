@@ -22,6 +22,7 @@ public class HelloController {
 
     @GetMapping("/sayHello")
     public String sayHello(@RequestParam("name") String name){
+        System.out.println("hello world!!!");
         return helloService.sayHello(name);
     }
 }
